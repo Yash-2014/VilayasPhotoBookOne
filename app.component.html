@@ -1,0 +1,73 @@
+<div class="flex flex-col h-full bg-gray-50">
+  <!-- Navbar -->
+  @if (store.isAuthenticated()) {
+    <nav class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-2 cursor-pointer" [routerLink]="['/']">
+        <div class="bg-brand-600 text-white p-1.5 rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+        </div>
+        <span class="font-serif text-xl font-bold text-gray-800">Vilayas<span class="text-brand-600">PhotoBook</span></span>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        @if (!store.isSubscribed()) {
+          <button [routerLink]="['/subscription']" class="hidden sm:flex items-center gap-1 text-xs font-semibold bg-gradient-to-r from-amber-200 to-yellow-400 text-yellow-900 px-3 py-1.5 rounded-full shadow-sm hover:shadow-md transition">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+            Go Premium
+          </button>
+        } @else {
+          <span class="hidden sm:flex text-xs font-bold text-brand-600 border border-brand-200 bg-brand-50 px-3 py-1 rounded-full">
+            Premium Member
+          </span>
+        }
+
+        <div class="relative group">
+          <button [routerLink]="['/profile']" class="flex items-center gap-2 focus:outline-none">
+            <img [src]="store.currentUser()?.profilePicUrl" alt="Profile" class="w-8 h-8 rounded-full border border-gray-300">
+          </button>
+        </div>
+      </div>
+    </nav>
+  }
+
+  <!-- Main Content -->
+  <main class="flex-1 overflow-hidden relative">
+    <router-outlet></router-outlet>
+  </main>
+</div>
+
+<!-- Ad Overlay -->
+@if (adService.isAdPlaying()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-fade-in relative">
+      <!-- Video Container -->
+      <div class="aspect-video bg-black flex items-center justify-center relative">
+        <video src="https://videos.pexels.com/video-files/855564/855564-hd_1920_1080_25fps.mp4" autoplay loop muted class="w-full h-full object-cover opacity-80"></video>
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-white">
+          <p class="font-bold text-lg mb-2">Advertisement</p>
+          <div class="animate-pulse">Loading amazing offer...</div>
+        </div>
+      </div>
+      
+      <!-- Controls -->
+      <div class="p-6 text-center">
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Support VilayasPhotoBook</h3>
+        <p class="text-gray-500 text-sm mb-6">Watch this short ad to continue your download or share.</p>
+        
+        @if (adService.adTimeRemaining() > 0) {
+          <div class="inline-flex items-center gap-2 text-brand-600 font-semibold bg-brand-50 px-4 py-2 rounded-lg">
+            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Reward in {{ adService.adTimeRemaining() }}s
+          </div>
+        } @else {
+          <button (click)="adService.closeAd()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-6 rounded-xl transition transform active:scale-95 shadow-lg shadow-brand-500/30">
+            Skip & Continue
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}
